@@ -6,7 +6,7 @@
 		include_once 'i_styles.html';
 		$serverName = "http://" . $_SERVER['SERVER_NAME'] . "/";
 		$currentFileToAmp = "amp_" . basename(__FILE__);
-		echo "\n".'<meta rel="amphtml" href="' . $serverName . $currentFileToAmp . '">'."\n";
+		echo "\n".'<link rel="amphtml" href="' . $serverName . $currentFileToAmp . '">'."\n";
 	?>
 	<meta name="author" content="Author Name" />
 	<meta name="title" content="Title Of Item" />
