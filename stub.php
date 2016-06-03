@@ -4,9 +4,12 @@
 	<?php
 		include_once 'i_meta.html';
 		include_once 'i_styles.html';
+		
+		//relevant PHP stuffs mentioned in the README
 		$serverName = "http://" . $_SERVER['SERVER_NAME'] . "/";
 		$currentFileToAmp = "amp_" . basename(__FILE__);
 		echo "\n".'<link rel="amphtml" href="' . $serverName . $currentFileToAmp . '">'."\n";
+		//end relevant PHP stuffs
 	?>
 	<meta name="author" content="Author Name" />
 	<meta name="title" content="Title Of Item" />
