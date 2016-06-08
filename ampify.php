@@ -6,12 +6,23 @@
 		exit;
 	}
 	$serverName = "http://" . $_SERVER['SERVER_NAME'] . "/";
+	$imageServerName = "http://" . $_SERVER['SERVER_NAME'] . "/";
 // get schema data
 	$tags = get_meta_tags($fileToAmp);
 	$pageDescription = $tags['description'];
 	$pageGenre = $tags['genre'];	
 	$pageTitle = $tags['title'];
 	$pageAuthor = $tags['author'];
+	//there is no creation time in a unix file system, but I think creation time should be the modified time, ideally. Could pass this if we were willing to tag every page.
+	$pageUnixTimeModified = filectime($fileToAmp);
+	$pageDateCreated = date('Y-m-d\TH:i:sP', $pageUnixTimeModified); //"2016-06-01T00:00:00+00:00"; 24 hour, ISO 8601 time.
+	if (isset($tags['image'])) { //if we have an image
+		$pageImage = $imageServerName . $tags['image'];	
+	} else {
+		$pageImage = $imageServerName . "images/about_me1.png";
+	}	
+	list($width, $height) = getimagesize($pageImage);
+
 	$pageKeywords = str_Replace(' ', ', ', $tags['keywords']); // original has only spaces, no commas...schema requires commas
 // start to make the template for our amp page. This is more of the HEAD section
 	$htmlOut = '<!doctype html>'."\n".'<html amp lang="en">'."\n".'<head>'."\n".'<meta charset="utf-8">'."\n";
@@ -20,14 +31,28 @@
     $htmlOut .= '<meta name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1">'."\n";
     $htmlOut .= '<style amp-boilerplate>body{-webkit-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-moz-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-ms-animation:-amp-start 8s steps(1,end) 0s 1 normal both;animation:-amp-start 8s steps(1,end) 0s 1 normal both}@-webkit-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-moz-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-ms-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-o-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}</style><noscript><style amp-boilerplate>body{-webkit-animation:none;-moz-animation:none;-ms-animation:none;animation:none}</style></noscript>'."\n";
 // output schema data 
-    $htmlOut .=  '<script type="application/ld+json">{"@context": "http://schema.org",'."\n";
-    $htmlOut .= '"@type": "CreativeWork",'."\n";
-    $htmlOut .= '"creator": "' . $pageAuthor . '",'."\n";    
-    $htmlOut .= '"name": "' . $pageTitle . '", '."\n";
-    $htmlOut .= '"headline": "' . $pageTitle . '", '."\n";
-    $htmlOut .= '"description": "' . $pageDescription . '", '."\n";
-    $htmlOut .= '"keywords": "' . $pageKeywords . '", '."\n";
-    $htmlOut .= '"genre": "' . $pageGenre . '"'."\n"; 	
+    $htmlOut .= '<script type="application/ld+json">'."\n";
+    $htmlOut .= '{"@context": "http://schema.org",'."\n";
+	    $htmlOut .= '"@type": "Article",'."\n";
+	    $htmlOut .= '"headline": "' . $pageTitle . '",' . "\n";
+	    $htmlOut .= '"datePublished": "' . $pageDateCreated . '",'."\n";
+	    $htmlOut .= '"author": ["' . $pageAuthor . '"],'."\n";
+	    $htmlOut .= '"image":{'."\n"; //start image thing for the story
+	    	$htmlOut .= '"@type": "ImageObject",'."\n";
+	    	$htmlOut .= '"url": "' . $pageImage . '",'."\n";
+	    	$htmlOut .= '"width": "' . $width . '",'."\n";
+			$htmlOut .= '"height": "' . $height . '"},'."\n";
+	    $htmlOut .= '"description": "' . $pageDescription . '", '."\n";
+	    $htmlOut .= '"publisher":{'."\n";
+	    $htmlOut .= '"@type":"Organization",'."\n";
+	    $htmlOut .= '"name":"mxdrm",'."\n";
+	    $htmlOut .= '"logo":{'."\n";
+	    	$htmlOut .= '"@type":"ImageObject",'."\n";
+	    	$htmlOut .= '"url":"http://www.danielrobertmaurer.com/images/logo.png",'."\n"; // hardcoded for now
+	    	$htmlOut .= '"width":114,'."\n";
+	    	$htmlOut .= '"height":60}'."\n";
+    $htmlOut .= '},'."\n";
+    $htmlOut .= '"url": "' . $serverName . $fileToAmp . '"'."\n";
  	$htmlOut .= '}</script>'."\n"; 
 // any custom style goes here. work on getting an include here?
 	$htmlOut .= '<link href="https://fonts.googleapis.com/css?family=Special+Elite" rel="stylesheet" type="text/css">'."\n"; //this is allowed
