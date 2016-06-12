@@ -33,9 +33,13 @@
 // output schema data 
     $htmlOut .= '<script type="application/ld+json">'."\n";
     $htmlOut .= '{"@context": "http://schema.org",'."\n";
-	    $htmlOut .= '"@type": "Article",'."\n";
+	    $htmlOut .= '"@type": "article",'."\n";
+	    $htmlOut .= '"mainEntityOfPage": {'."\n";
+    		$htmlOut .= '"@type": "WebPage",'."\n";
+    		$htmlOut .= '"@id": "'. $serverName . $fileToAmp .'"},'."\n";
 	    $htmlOut .= '"headline": "' . $pageTitle . '",' . "\n";
 	    $htmlOut .= '"datePublished": "' . $pageDateCreated . '",'."\n";
+	    $htmlOut .= '"dateModified": "' . $pageDateCreated . '",'."\n";
 	    $htmlOut .= '"author": ["' . $pageAuthor . '"],'."\n";
 	    $htmlOut .= '"image":{'."\n"; //start image thing for the story
 	    	$htmlOut .= '"@type": "ImageObject",'."\n";
